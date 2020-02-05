@@ -19,8 +19,8 @@ class BB8Controller(object):
 
     def __init__(self):
         pygame.mixer.init()
-        pygame.mixer.music.load('sounds/connect.mp3')
-        pygame.mixer.music.play()
+        #pygame.mixer.music.load('sounds/connect.mp3')
+        #pygame.mixer.music.play()
 
         self.bb8 = BB8_driver.Sphero()
         self.bb8.connect()

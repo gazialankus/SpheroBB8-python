@@ -7,7 +7,7 @@ import threading
 import time
 from bluepy import btle
 
-MAC_ADDR = 'EB:72:B0:40:92:AF'
+MAC_ADDR = 'da:82:da:a9:94:95'
 
 # These are the message response code that can be return by Sphero.
 MRSP = dict(
@@ -135,7 +135,9 @@ class BTInterface(btle.DefaultDelegate):
         btle.DefaultDelegate.__init__(self)
 
         # Address type must be "random" or it won't connect.
+	print("HELE")
         self.peripheral = btle.Peripheral(deviceAddress, btle.ADDR_TYPE_RANDOM)
+	print("HELO")
         self.peripheral.setDelegate(self)
 
         self.seq = 0
@@ -149,11 +151,11 @@ class BTInterface(btle.DefaultDelegate):
 
         # This startup sequence is also identical to the one for Ollie.
         # It even uses the same unlock code.
-        print 'Sending antidos'
+        print ('Sending antidos')
         self.antidos.write('011i3', withResponse=True)
-        print 'Sending txpower'
+        print ('Sending txpower')
         self.txpower.write('\x0007', withResponse=True)
-        print 'Sending wakecpu'
+        print ('Sending wakecpu')
         self.wakecpu.write('\x01', withResponse=True)
 
     def getSpheroCharacteristic(self, fragment):
@@ -161,9 +163,9 @@ class BTInterface(btle.DefaultDelegate):
 
     def dumpCharacteristics(self):
         for s in self.peripheral.getServices():
-            print s
+            print (s)
             for c in s.getCharacteristics():
-                print c, hex(c.handle)
+                print (c, hex(c.handle))
 
     def cmd(self, did, cid, data=[], answer=True, resetTimeout=True):
         # Commands are as specified in Sphero API 1.50 PDF.
@@ -178,7 +180,7 @@ class BTInterface(btle.DefaultDelegate):
         chk ^= 255
 
         msg = [0xff, sop2, did, cid, seq, dlen] + data + [chk]
-        print 'cmd:', ' '.join([chr(c).encode('hex') for c in msg])
+        print ('cmd:', ' '.join([chr(c).encode('hex') for c in msg]))
         # Note: withResponse is very important. Most commands won't work without it.
         self.roll.write(''.join([chr(c) for c in msg]), withResponse=True)
 
@@ -575,7 +577,7 @@ class Sphero(threading.Thread):
         self.create_mask_list(sample_mask1, sample_mask2)
         self.stream_mask1 = sample_mask1
         self.stream_mask2 = sample_mask2
-        print data
+        print (data)
         self.send(data, response)
 
     def set_filtered_data_strm(self, sample_div, sample_frames, pcnt, response):
@@ -829,7 +831,7 @@ class Sphero(threading.Thread):
         data = self.raw_data_buf
         while len(data) > 5:
             if data[:2] == RECV['SYNC']:
-                print "got response packet"
+                print ("got response packet")
                 # response packet
                 data_length = ord(data[4])
                 if data_length + 5 <= len(data):
@@ -857,7 +859,7 @@ class Sphero(threading.Thread):
                         IDCODE['PWR_NOTIFY']):
                     self._async_callback_dict[IDCODE['PWR_NOTIFY']](self.parse_pwr_notify(data_packet, data_length))
                 else:
-                    print "got a packet that isn't streaming"
+                    print ("got a packet that isn't streaming")
             else:
                 raise RuntimeError("Bad SOF : " + self.data2hexstr(data))
         self.raw_data_buf = data
@@ -917,8 +919,8 @@ class Sphero(threading.Thread):
         for i in range((data_length - 1) / 2):
             unpack = struct.unpack_from('>h', ''.join(data[5 + 2 * i:]))
             output[self.mask_list[i]] = unpack[0]
-        print self.mask_list
-        print output
+        print (self.mask_list)
+        print (output)
         return output
 
 
