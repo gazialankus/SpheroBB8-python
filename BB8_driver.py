@@ -135,9 +135,9 @@ class BTInterface(btle.DefaultDelegate):
         btle.DefaultDelegate.__init__(self)
 
         # Address type must be "random" or it won't connect.
-	print("HELE")
+        print("HELE")
         self.peripheral = btle.Peripheral(deviceAddress, btle.ADDR_TYPE_RANDOM)
-	print("HELO")
+        print("HELO")
         self.peripheral.setDelegate(self)
 
         self.seq = 0
@@ -152,11 +152,11 @@ class BTInterface(btle.DefaultDelegate):
         # This startup sequence is also identical to the one for Ollie.
         # It even uses the same unlock code.
         print ('Sending antidos')
-        self.antidos.write('011i3', withResponse=True)
+        self.antidos.write(b'011i3', withResponse=True)
         print ('Sending txpower')
-        self.txpower.write('\x0007', withResponse=True)
+        self.txpower.write(b'\x0007', withResponse=True)
         print ('Sending wakecpu')
-        self.wakecpu.write('\x01', withResponse=True)
+        self.wakecpu.write(b'\x01', withResponse=True)
 
     def getSpheroCharacteristic(self, fragment):
         return self.peripheral.getCharacteristics(uuid='22bb746f' + fragment + '75542d6f726568705327')[0]
@@ -774,7 +774,7 @@ class Sphero(threading.Thread):
         else:
             output = REQ['WITHOUT_RESPONSE'] + data + [checksum]
         # pack the msg
-        msg = ''.join(struct.pack('B', x) for x in output)
+        msg = b''.join(struct.pack('B', x) for x in output)
         # send the msg
         with self._communication_lock:
             self.bt.send(msg)
